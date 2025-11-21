@@ -1,5 +1,5 @@
 {
-  "name": "fastify-ses",
+  "name": "fastify-ses-mailer",
   "version": "1.0.0",
   "description": "A Fastify plugin for sending emails via AWS SES (Simple Email Service)",
   "main": "index.js",
@@ -25,7 +25,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/KaranHotwani/fastify-ses"
+    "url": "https://github.com/KaranHotwani/fastify-ses-mailer"
   },
   "scripts": {
     "test": "node --test test/test.js",
