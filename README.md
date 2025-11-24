@@ -1,12 +1,30 @@
 # fastify-ses-mailer
 
+[![npm version](https://img.shields.io/npm/v/fastify-ses-mailer.svg)](https://www.npmjs.com/package/fastify-ses-mailer)
+[![License](https://img.shields.io/npm/l/fastify-ses-mailer.svg)](https://github.com/KaranHotwani/fastify-ses-mailer/blob/main/LICENSE)
+[![Node.js](https://img.shields.io/node/v/fastify-ses-mailer.svg)](https://nodejs.org/)
+
 Fastify plugin for sending emails via AWS SES using AWS SDK v3.
+
+## Why?
+
+Sending emails with AWS SES in Fastify requires boilerplate setup - importing the SDK, configuring clients, handling credentials, and managing multiple send methods. This plugin simplifies it by:
+
+- **Zero boilerplate** - One-line plugin registration
+- **AWS SDK v3** - Modern, tree-shakeable, smaller bundle size
+- **Automatic credentials** - Uses AWS credential chain (env vars, IAM roles, SSO)
+- **Three methods** - Simple send, raw MIME (attachments), bulk templated emails
+- **TypeScript support** - Full type definitions included
+- **Production ready** - Validated inputs, tested, linted
+
 
 ## Installation
 
 ```bash
-npm install fastify-ses-mailer fastify@^5.0.0
+npm install fastify-ses-mailer
 ```
+
+**Peer dependency:** Requires Fastify v5
 
 ## Usage
 
@@ -20,40 +38,16 @@ await fastify.register(fastifySES, {
   region: 'us-east-1',
   defaultFrom: 'sender@example.com'
 })
-```
 
-## Configuration
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `region` | string | `process.env.AWS_REGION` or `'us-east-1'` | AWS region |
-| `defaultFrom` | string | `process.env.SES_FROM_EMAIL` | Default sender email |
-
-## AWS Credentials
-
-Set environment variables:
-```bash
-export AWS_REGION=us-east-1
-export AWS_ACCESS_KEY_ID=your_key
-export AWS_SECRET_ACCESS_KEY=your_secret
-export SES_FROM_EMAIL=sender@example.com
-```
-
-Or use IAM roles, `~/.aws/credentials`, or AWS SSO.
-
-## API
-
-### `fastify.ses.send(options)`
-
-Send HTML or text emails.
-
-```js
-await fastify.ses.send({
+// Send email
+const result = await fastify.ses.send({
   to: 'user@example.com',
   subject: 'Hello',
   html: '<h1>Hi!</h1>',
   text: 'Hi!'
 })
+
+console.log('Message ID:', result.MessageId)
 ```
 
 **Options:**
@@ -63,67 +57,43 @@ await fastify.ses.send({
 - `html` (string, optional): HTML body
 - `text` (string, optional): Text body
 
-### `fastify.ses.sendRaw(options)`
+For `sendRaw()` (attachments) and `sendBulk()` (templated bulk emails), see [`examples/example.js`](./examples/example.js).
 
-Send emails with attachments using raw MIME format.
+## Configuration
 
-```js
-await fastify.ses.sendRaw({
-  rawMessage: `From: sender@example.com
-To: user@example.com
-Subject: With attachment
-MIME-Version: 1.0
-Content-Type: text/plain
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `region` | `string` | `process.env.AWS_REGION` or `'us-east-1'` | AWS region |
+| `defaultFrom` | `string` | `process.env.SES_FROM_EMAIL` | Default sender email |
 
-Message body`
-})
+## AWS Credentials
+
+Set environment variables:
+
+```bash
+export AWS_REGION=us-east-1
+export AWS_ACCESS_KEY_ID=your_key
+export AWS_SECRET_ACCESS_KEY=your_secret
+export SES_FROM_EMAIL=sender@example.com
 ```
 
-**Options:**
-- `rawMessage` (string | Buffer): Raw MIME message
-
-### `fastify.ses.sendBulk(options)`
-
-Send personalized templated emails to multiple recipients.
-
-```js
-await fastify.ses.sendBulk({
-  to: ['user1@example.com', 'user2@example.com'],
-  template: 'WelcomeEmail',
-  defaultTemplateData: { company: 'Acme' },
-  bulkTemplateData: [
-    { name: 'Alice' },
-    { name: 'Bob' }
-  ]
-})
-```
-
-**Options:**
-- `from` (string, optional): Sender email
-- `to` (string[]): Array of recipients
-- `template` (string): SES template name
-- `defaultTemplateData` (object, optional): Default variables
-- `bulkTemplateData` (array, optional): Per-recipient variables
-
-**Note:** Create templates in AWS SES Console or via CLI first.
-
-## Method Comparison
-
-| Method | Use For | Key Feature |
-|--------|---------|-------------|
-| `send` | Normal emails | HTML/text to one or more |
-| `sendRaw` | Attachments | Files, PDFs, images |
-| `sendBulk` | Mass mailing | Personalized templates |
+Or use IAM roles, `~/.aws/credentials`, or AWS SSO.
 
 ## Example
 
-See [`examples/example.js`](./examples/example.js).
+See [`examples/example.js`](./examples/example.js) for a complete working example.
+
+```bash
+npm run example
+```
 
 ## Testing
 
 ```bash
 npm test
 ```
+
+Tests verify plugin registration, parameter validation, and error handling. All tests run without making actual AWS API calls.
 
 ## Requirements
 
@@ -133,8 +103,9 @@ npm test
 
 ## License
 
-MIT © Karan Hotwani
+MIT © [Karan Hotwani](https://github.com/KaranHotwani)
 
-## Repository
+## Links
 
-https://github.com/KaranHotwani/fastify-ses-mailer
+- **npm:** https://www.npmjs.com/package/fastify-ses-mailer
+- **GitHub:** https://github.com/KaranHotwani/fastify-ses-mailer
