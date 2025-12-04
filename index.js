@@ -2,9 +2,34 @@ import fp from 'fastify-plugin'
 import { SESClient, SendEmailCommand, SendRawEmailCommand, SendBulkTemplatedEmailCommand } from '@aws-sdk/client-ses'
 
 async function fastifySES (fastify, opts = {}) {
-  const { region = process.env.AWS_REGION || 'us-east-1', defaultFrom = process.env.SES_FROM_EMAIL || null } = opts
+  const {
+    region = process.env.AWS_REGION || 'us-east-1',
+    defaultFrom = process.env.SES_FROM_EMAIL || null,
+    credentials,
+    endpoint,
+    maxAttempts,
+    retryMode
+  } = opts
 
-  const sesClient = new SESClient({ region })
+  const sesClientConfig = { region }
+
+  if (credentials) {
+    sesClientConfig.credentials = credentials
+  }
+
+  if (endpoint) {
+    sesClientConfig.endpoint = endpoint
+  }
+
+  if (maxAttempts !== undefined) {
+    sesClientConfig.maxAttempts = maxAttempts
+  }
+
+  if (retryMode) {
+    sesClientConfig.retryMode = retryMode
+  }
+
+  const sesClient = new SESClient(sesClientConfig)
 
   const send = async ({ from, to, subject, html, text }) => {
     if (!to) {

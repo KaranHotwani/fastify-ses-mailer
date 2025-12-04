@@ -1,5 +1,6 @@
 import { FastifyPluginCallback } from 'fastify';
 import { SendEmailCommandOutput, SendRawEmailCommandOutput, SendBulkTemplatedEmailCommandOutput } from '@aws-sdk/client-ses';
+import { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -14,6 +15,10 @@ declare module 'fastify' {
 export interface FastifySESOptions {
   region?: string;
   defaultFrom?: string;
+  credentials?: AwsCredentialIdentity | AwsCredentialIdentityProvider;
+  endpoint?: string;
+  maxAttempts?: number;
+  retryMode?: string;
 }
 
 export interface SendEmailOptions {

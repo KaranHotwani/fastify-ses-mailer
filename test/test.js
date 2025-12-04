@@ -45,3 +45,17 @@ test('sendBulk validates required parameters', async (t) => {
 
   await fastify.close()
 })
+
+test('plugin accepts new config options', async (t) => {
+  const fastify = Fastify()
+  await fastify.register(fastifySES, {
+    defaultFrom: 'test@example.com',
+    credentials: { accessKeyId: 'test-key', secretAccessKey: 'test-secret' },
+    endpoint: 'http://localhost:4566',
+    maxAttempts: 3,
+    retryMode: 'adaptive'
+  })
+
+  assert.ok(fastify.ses)
+  await fastify.close()
+})
